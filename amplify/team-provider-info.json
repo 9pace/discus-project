@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-discusproject-dev-31ef9-authRole",
+      "UnauthRoleArn": "arn:aws:iam::014148916658:role/amplify-discusproject-dev-31ef9-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::014148916658:role/amplify-discusproject-dev-31ef9-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-discusproject-dev-31ef9-deployment",
+      "UnauthRoleName": "amplify-discusproject-dev-31ef9-unauthRole",
+      "StackName": "amplify-discusproject-dev-31ef9",
+      "StackId": "arn:aws:cloudformation:us-east-1:014148916658:stack/amplify-discusproject-dev-31ef9/a4a1fe20-c5ce-11f0-b7d9-0ef4995d315b",
+      "AmplifyAppId": "dywoww6oyfu8a"
+    },
+    "categories": {
+      "auth": {
+        "discusprojectfa22430ffa22430f": {}
+      },
+      "api": {
+        "discusproject": {}
+      },
+      "storage": {
+        "dynamo1b239aa0": {}
+      },
+      "function": {
+        "discusproject76f68b07": {
+          "deploymentBucketName": "amplify-discusproject-dev-31ef9-deployment",
+          "s3Key": "amplify-builds/discusproject76f68b07-6b574564714969425637-build.zip"
+        }
+      }
+    }
+  }
+}

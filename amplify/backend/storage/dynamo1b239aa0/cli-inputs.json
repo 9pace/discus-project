@@ -1,0 +1,26 @@
+{
+  "resourceName": "dynamo1b239aa0",
+  "tableName": "dynamo1b239aa0",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "col1",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "col1index",
+      "partitionKey": {
+        "fieldName": "col1",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "col2",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}
