@@ -19,7 +19,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "discusproject76f68b07": {
+    "activityLogger": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -28,7 +28,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "storage": {
-    "dynamo1b239aa0": {
+    "countsTable": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

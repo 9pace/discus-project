@@ -1,8 +1,6 @@
 import { Amplify } from 'aws-amplify';
-import { signUp, confirmSignUp, signIn, signOut, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+import { signUp, confirmSignUp, signIn, signOut, getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, QueryCommand, UpdateCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import awsconfig from './aws-exports';
 import * as mutations from './graphql/mutations';
 import * as queries from './graphql/queries';
@@ -10,14 +8,13 @@ import * as queries from './graphql/queries';
 Amplify.configure(awsconfig);
 const client = generateClient();
 
-const DYNAMODB_TABLE = awsconfig.aws_dynamodb_table_schemas[0].tableName;
-
 let currentDiscussionId = null;
 let currentDiscussionName = null;
 let currentTopicId = null;
 let currentTopicName = null;
 let currentPostId = null;
 let currentUserPhone = null;
+let currentUserId = null;
 
 const DISCUSSIONS = [
   { id: 'tech', name: 'Technology', icon: '💻', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
@@ -28,18 +25,14 @@ const DISCUSSIONS = [
   { id: 'travel', name: 'Travel', icon: '✈️', color: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' }
 ];
 
-async function getDynamoDBClient() {
+async function logActivity(activityType, metadata = '') {
   try {
-    const session = await fetchAuthSession({ forceRefresh: true });
-    if (!session.credentials) throw new Error('No credentials');
-    const dynamoClient = new DynamoDBClient({
-      region: awsconfig.aws_project_region,
-      credentials: session.credentials
+    await client.graphql({
+      query: mutations.logActivity,
+      variables: { userId: currentUserId, activityType, metadata }
     });
-    return DynamoDBDocumentClient.from(dynamoClient);
   } catch (error) {
-    console.error('Error getting DynamoDB client:', error);
-    throw error;
+    console.error('Error logging activity:', error);
   }
 }
 
@@ -79,9 +72,7 @@ function showPosts(topicId, topicName) {
 
 async function showPostDetail(postId) {
   currentPostId = postId;
-  // Increment views
-  const views = await incrementPostViews(postId);
-  console.log('Post views:', views);
+  await logActivity('post_view', postId);
   document.getElementById('postDetailPage').classList.remove('hidden');
   loadPostDetail(postId);
   loadComments(postId);
@@ -93,6 +84,7 @@ async function checkAuthState() {
   try {
     const user = await getCurrentUser();
     currentUserPhone = user.signInDetails.loginId;
+    currentUserId = user.userId;
     showMainApp();
   } catch {
     showPage('signinPage');
@@ -146,7 +138,10 @@ document.getElementById('signinBtn').addEventListener('click', async () => {
   try {
     await signIn({ username: phone, password });
     await new Promise(resolve => setTimeout(resolve, 500));
+    const user = await getCurrentUser();
     currentUserPhone = phone;
+    currentUserId = user.userId;
+    await logActivity('login', phone);
     showMainApp();
   } catch (error) {
     alert('Error: ' + error.message);
@@ -157,6 +152,64 @@ document.getElementById('signoutBtn').addEventListener('click', async () => {
   await signOut();
   showPage('signinPage');
 });
+
+document.getElementById('activityBtn').addEventListener('click', () => {
+  ['discussionsPage', 'topicsPage', 'postsPage', 'postDetailPage'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById('activityPage').classList.remove('hidden');
+  loadActivity();
+});
+
+document.getElementById('backToDiscussionsFromActivity').addEventListener('click', () => {
+  document.getElementById('activityPage').classList.add('hidden');
+  showDiscussions();
+});
+
+async function loadActivity() {
+  try {
+    const result = await client.graphql({
+      query: queries.getUserActivity,
+      variables: { userId: currentUserId }
+    });
+    
+    const list = document.getElementById('activityList');
+    list.innerHTML = '';
+    
+    const activities = result.data.getUserActivity || [];
+    
+    if (activities.length === 0) {
+      list.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">No activity yet</div>
+        </div>
+      `;
+      return;
+    }
+    
+    for (const activity of activities) {
+      const div = document.createElement('div');
+      div.className = 'topic-item';
+      const icon = activity.activityType === 'login' ? '🔐' : 
+                   activity.activityType === 'post_view' ? '👁️' :
+                   activity.activityType === 'post_create' ? '📝' : '💬';
+      const label = activity.activityType.replace('_', ' ').toUpperCase();
+      const time = new Date(activity.timestamp).toLocaleString();
+      
+      div.innerHTML = `
+        <div class="topic-header">
+          <div class="topic-title">${icon} ${label}</div>
+          <div class="topic-meta">${time}</div>
+        </div>
+        <div class="topic-meta" style="margin-top: 5px;">${activity.metadata || ''}</div>
+      `;
+      list.appendChild(div);
+    }
+  } catch (error) {
+    console.error('Error loading activity:', error);
+  }
+}
 
 // Navigation
 document.getElementById('backToDiscussions').addEventListener('click', () => {
@@ -277,23 +330,12 @@ document.getElementById('createPostBtn').addEventListener('click', async () => {
   
   try {
     const title = content.substring(0, 60) + (content.length > 60 ? '...' : '');
-    const postResult = await client.graphql({
+    const result = await client.graphql({
       query: mutations.createPost,
-      variables: { input: { title, blogPostsId: currentTopicId } }
+      variables: { input: { title, content, blogPostsId: currentTopicId } }
     });
     
-    const postId = postResult.data.createPost.id;
-    const dynamoDB = await getDynamoDBClient();
-    const timestamp = new Date().toISOString();
-    
-    await dynamoDB.send(new PutCommand({
-      TableName: DYNAMODB_TABLE,
-      Item: {
-        id: `post-${postId}`,
-        col1: postId,
-        col2: `${timestamp}|${content}|0|0`
-      }
-    }));
+    await logActivity('post_create', result.data.createPost.id);
     
     postTextarea.value = '';
     postCharCount.textContent = '0 / 500';
@@ -324,29 +366,6 @@ async function loadPosts(topicId) {
     }
     
     for (const post of result.data.listPosts.items) {
-      const dynamoDB = await getDynamoDBClient();
-      let content = '';
-      let likes = 0;
-      let views = 0;
-      
-      try {
-        const contentResult = await dynamoDB.send(new QueryCommand({
-          TableName: DYNAMODB_TABLE,
-          IndexName: 'col1index',
-          KeyConditionExpression: 'col1 = :postId',
-          ExpressionAttributeValues: { ':postId': post.id },
-          ScanIndexForward: true
-        }));
-        
-        if (contentResult.Items && contentResult.Items.length > 0) {
-          const parts = contentResult.Items[0].col2.split('|');
-          content = parts[1] || '';
-          likes = parseInt(parts[2]) || 0;
-          views = parseInt(parts[3]) || 0;
-        }
-      } catch (e) {
-        console.error('Error loading content:', e);
-      }
       
       // Get comments count
       const commentsResult = await client.graphql({
@@ -367,13 +386,9 @@ async function loadPosts(topicId) {
               <span class="username">User</span>
               <span class="timestamp">• just now</span>
             </div>
-            <div class="post-text">${content}</div>
+            <div class="post-text">${post.content || ''}</div>
             <div class="post-actions">
-              <button class="action-btn" onclick="likePost('${post.id}', event)">
-                ❤️ <span id="likes-${post.id}">${likes}</span>
-              </button>
               <span class="action-btn">💬 ${commentsCount}</span>
-              <span class="action-btn">👁️ ${views}</span>
               <button class="delete-btn" onclick="event.stopPropagation(); deletePost('${post.id}')">Delete</button>
             </div>
           </div>
@@ -387,39 +402,6 @@ async function loadPosts(topicId) {
   }
 }
 
-
-window.likePost = async function(postId, event) {
-  event.stopPropagation();
-  try {
-    const dynamoDB = await getDynamoDBClient();
-    const result = await dynamoDB.send(new GetCommand({
-      TableName: DYNAMODB_TABLE,
-      Key: { id: `post-${postId}`, col1: postId }
-    }));
-    
-    if (result.Item) {
-      const parts = result.Item.col2.split('|');
-      const timestamp = parts[0];
-      const content = parts[1];
-      const currentLikes = parseInt(parts[2]) || 0;
-      const views = parseInt(parts[3]) || 0;
-      const newLikes = currentLikes + 1;
-      
-      await dynamoDB.send(new PutCommand({
-        TableName: DYNAMODB_TABLE,
-        Item: {
-          id: `post-${postId}`,
-          col1: postId,
-          col2: `${timestamp}|${content}|${newLikes}|${views}`
-        }
-      }));
-      
-      document.getElementById(`likes-${postId}`).textContent = newLikes;
-    }
-  } catch (error) {
-    console.error('Error liking post:', error);
-  }
-};
 
 
 window.viewPost = function(postId) {
@@ -449,29 +431,6 @@ async function loadPostDetail(postId) {
     });
     
     const post = result.data.getPost;
-    const dynamoDB = await getDynamoDBClient();
-    let content = '';
-    let likes = 0;
-    let views = 0;
-    
-    try {
-      const contentResult = await dynamoDB.send(new QueryCommand({
-        TableName: DYNAMODB_TABLE,
-        IndexName: 'col1index',
-        KeyConditionExpression: 'col1 = :postId',
-        ExpressionAttributeValues: { ':postId': postId },
-        ScanIndexForward: true
-      }));
-      
-      if (contentResult.Items && contentResult.Items.length > 0) {
-        const parts = contentResult.Items[0].col2.split('|');
-        content = parts[1] || '';
-        likes = parseInt(parts[2]) || 0;
-        views = parseInt(parts[3]) || 0;
-      }
-    } catch (e) {
-      console.error('Error loading content:', e);
-    }
     
     // Get fresh comments count
     const commentsResult = await client.graphql({
@@ -489,13 +448,9 @@ async function loadPostDetail(postId) {
               <span class="username">User</span>
               <span class="timestamp">• just now</span>
             </div>
-            <div class="post-text">${content}</div>
+            <div class="post-text">${post.content || ''}</div>
             <div class="post-actions">
-              <button class="action-btn" onclick="likePostDetail('${postId}')">
-                ❤️ <span id="detail-likes-${postId}">${likes}</span>
-              </button>
               <span class="action-btn">💬 ${commentsCount}</span>
-              <span class="action-btn">👁️ ${views}</span>
             </div>
           </div>
         </div>
@@ -505,38 +460,6 @@ async function loadPostDetail(postId) {
     console.error('Error loading post detail:', error);
   }
 }
-
-window.likePostDetail = async function(postId) {
-  try {
-    const dynamoDB = await getDynamoDBClient();
-    const result = await dynamoDB.send(new GetCommand({
-      TableName: DYNAMODB_TABLE,
-      Key: { id: `post-${postId}`, col1: postId }
-    }));
-    
-    if (result.Item) {
-      const parts = result.Item.col2.split('|');
-      const timestamp = parts[0];
-      const content = parts[1];
-      const currentLikes = parseInt(parts[2]) || 0;
-      const views = parseInt(parts[3]) || 0;
-      const newLikes = currentLikes + 1;
-      
-      await dynamoDB.send(new PutCommand({
-        TableName: DYNAMODB_TABLE,
-        Item: {
-          id: `post-${postId}`,
-          col1: postId,
-          col2: `${timestamp}|${content}|${newLikes}|${views}`
-        }
-      }));
-      
-      document.getElementById(`detail-likes-${postId}`).textContent = newLikes;
-    }
-  } catch (error) {
-    console.error('Error liking post:', error);
-  }
-};
 
 
 // Comments
@@ -553,10 +476,13 @@ document.getElementById('addCommentBtn').addEventListener('click', async () => {
   if (!content) return;
   
   try {
-    await client.graphql({
+    const result = await client.graphql({
       query: mutations.createComment,
       variables: { input: { content, postCommentsId: currentPostId } }
     });
+    
+    await logActivity('comment_create', result.data.createComment.id);
+    
     commentTextarea.value = '';
     commentCharCount.textContent = '0 / 300';
     loadComments(currentPostId);
@@ -607,27 +533,7 @@ async function loadComments(postId) {
   }
 }
 
-// When viewing a post, call this
-async function incrementPostViews(postId) {
-  try {
-    const result = await client.graphql({
-      query: `
-        mutation IncrementViews($postId: ID!) {
-          incrementViews(postId: $postId) {
-            views
-          }
-        }
-      `,
-      variables: { postId }
-    });
-    console.log('Increment result:', result);
-    return result.data.incrementViews.views;
-  } catch (error) {
-    console.error('Error incrementing views:', error);
-    console.error('Error details:', JSON.stringify(error, null, 2));
-    return 0;
-  }
-}
+
 
 window.deleteComment = async function(commentId) {
   if (!confirm('Delete this comment?')) return;

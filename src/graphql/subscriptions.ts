@@ -63,6 +63,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost($filter: Mo
   onCreatePost(filter: $filter) {
     id
     title
+    content
     blog {
       id
       name
@@ -88,6 +89,7 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost($filter: Mo
   onUpdatePost(filter: $filter) {
     id
     title
+    content
     blog {
       id
       name
@@ -113,6 +115,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost($filter: Mo
   onDeletePost(filter: $filter) {
     id
     title
+    content
     blog {
       id
       name
@@ -140,6 +143,7 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment($filt
     post {
       id
       title
+      content
       createdAt
       updatedAt
       blogPostsId
@@ -162,6 +166,7 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment($filt
     post {
       id
       title
+      content
       createdAt
       updatedAt
       blogPostsId
@@ -184,6 +189,7 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment($filt
     post {
       id
       title
+      content
       createdAt
       updatedAt
       blogPostsId

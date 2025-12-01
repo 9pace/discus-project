@@ -2,9 +2,12 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type ViewCount = {
-  __typename: "ViewCount",
-  views: number,
+export type ActivityLog = {
+  __typename: "ActivityLog",
+  userId: string,
+  timestamp: string,
+  activityType: string,
+  metadata?: string | null,
 };
 
 export type CreateBlogInput = {
@@ -80,6 +83,7 @@ export type Post = {
   __typename: "Post",
   id: string,
   title: string,
+  content?: string | null,
   blog?: Blog | null,
   comments?: ModelCommentConnection | null,
   createdAt: string,
@@ -115,11 +119,13 @@ export type DeleteBlogInput = {
 export type CreatePostInput = {
   id?: string | null,
   title: string,
+  content?: string | null,
   blogPostsId?: string | null,
 };
 
 export type ModelPostConditionInput = {
   title?: ModelStringInput | null,
+  content?: ModelStringInput | null,
   and?: Array< ModelPostConditionInput | null > | null,
   or?: Array< ModelPostConditionInput | null > | null,
   not?: ModelPostConditionInput | null,
@@ -147,6 +153,7 @@ export type ModelIDInput = {
 export type UpdatePostInput = {
   id: string,
   title?: string | null,
+  content?: string | null,
   blogPostsId?: string | null,
 };
 
@@ -199,6 +206,7 @@ export type ModelBlogConnection = {
 export type ModelPostFilterInput = {
   id?: ModelIDInput | null,
   title?: ModelStringInput | null,
+  content?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelPostFilterInput | null > | null,
@@ -261,6 +269,7 @@ export type ModelSubscriptionStringInput = {
 export type ModelSubscriptionPostFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   title?: ModelSubscriptionStringInput | null,
+  content?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionPostFilterInput | null > | null,
@@ -277,14 +286,19 @@ export type ModelSubscriptionCommentFilterInput = {
   or?: Array< ModelSubscriptionCommentFilterInput | null > | null,
 };
 
-export type IncrementViewsMutationVariables = {
-  postId: string,
+export type LogActivityMutationVariables = {
+  userId: string,
+  activityType: string,
+  metadata?: string | null,
 };
 
-export type IncrementViewsMutation = {
-  incrementViews?:  {
-    __typename: "ViewCount",
-    views: number,
+export type LogActivityMutation = {
+  logActivity?:  {
+    __typename: "ActivityLog",
+    userId: string,
+    timestamp: string,
+    activityType: string,
+    metadata?: string | null,
   } | null,
 };
 
@@ -355,6 +369,7 @@ export type CreatePostMutation = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -382,6 +397,7 @@ export type UpdatePostMutation = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -409,6 +425,7 @@ export type DeletePostMutation = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -439,6 +456,7 @@ export type CreateCommentMutation = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -463,6 +481,7 @@ export type UpdateCommentMutation = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -487,6 +506,7 @@ export type DeleteCommentMutation = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -496,6 +516,20 @@ export type DeleteCommentMutation = {
     updatedAt: string,
     postCommentsId?: string | null,
   } | null,
+};
+
+export type GetUserActivityQueryVariables = {
+  userId: string,
+};
+
+export type GetUserActivityQuery = {
+  getUserActivity?:  Array< {
+    __typename: "ActivityLog",
+    userId: string,
+    timestamp: string,
+    activityType: string,
+    metadata?: string | null,
+  } | null > | null,
 };
 
 export type GetBlogQueryVariables = {
@@ -545,6 +579,7 @@ export type GetPostQuery = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -575,6 +610,7 @@ export type ListPostsQuery = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -595,6 +631,7 @@ export type GetCommentQuery = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -690,6 +727,7 @@ export type OnCreatePostSubscription = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -716,6 +754,7 @@ export type OnUpdatePostSubscription = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -742,6 +781,7 @@ export type OnDeletePostSubscription = {
     __typename: "Post",
     id: string,
     title: string,
+    content?: string | null,
     blog?:  {
       __typename: "Blog",
       id: string,
@@ -771,6 +811,7 @@ export type OnCreateCommentSubscription = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -794,6 +835,7 @@ export type OnUpdateCommentSubscription = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,
@@ -817,6 +859,7 @@ export type OnDeleteCommentSubscription = {
       __typename: "Post",
       id: string,
       title: string,
+      content?: string | null,
       createdAt: string,
       updatedAt: string,
       blogPostsId?: string | null,

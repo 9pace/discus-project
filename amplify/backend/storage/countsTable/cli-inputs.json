@@ -1,23 +1,23 @@
 {
-  "resourceName": "dynamo1b239aa0",
-  "tableName": "dynamo1b239aa0",
+  "resourceName": "countsTable",
+  "tableName": "countsTable",
   "partitionKey": {
-    "fieldName": "id",
+    "fieldName": "postId",
     "fieldType": "string"
   },
   "sortKey": {
-    "fieldName": "col1",
+    "fieldName": "metricType",
     "fieldType": "string"
   },
   "gsi": [
     {
-      "name": "col1index",
+      "name": "metricIndex",
       "partitionKey": {
-        "fieldName": "col1",
+        "fieldName": "metricType",
         "fieldType": "string"
       },
       "sortKey": {
-        "fieldName": "col2",
+        "fieldName": "updatedAt",
         "fieldType": "string"
       }
     }

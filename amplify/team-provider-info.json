@@ -19,12 +19,17 @@
         "discusproject": {}
       },
       "storage": {
-        "dynamo1b239aa0": {}
+        "dynamo1b239aa0": {},
+        "countsTable": {}
       },
       "function": {
         "discusproject76f68b07": {
           "deploymentBucketName": "amplify-discusproject-dev-31ef9-deployment",
           "s3Key": "amplify-builds/discusproject76f68b07-6b574564714969425637-build.zip"
+        },
+        "activityLogger": {
+          "deploymentBucketName": "amplify-discusproject-dev-31ef9-deployment",
+          "s3Key": "amplify-builds/activityLogger-723074464e4d3655494b-build.zip"
         }
       }
     }

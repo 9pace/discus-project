@@ -46,7 +46,7 @@
     }
   },
   "function": {
-    "discusproject76f68b07": {
+    "activityLogger": {
       "build": true,
       "dependsOn": [
         {
@@ -56,7 +56,7 @@
             "StreamArn"
           ],
           "category": "storage",
-          "resourceName": "dynamo1b239aa0"
+          "resourceName": "countsTable"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -64,6 +64,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_activityLogger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityLogger"
+        }
+      ]
+    },
+    "AMPLIFY_function_activityLogger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "activityLogger"
+        }
+      ]
+    },
     "AMPLIFY_function_discusproject76f68b07_deploymentBucketName": {
       "usedBy": [
         {
@@ -82,7 +98,7 @@
     }
   },
   "storage": {
-    "dynamo1b239aa0": {
+    "countsTable": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }

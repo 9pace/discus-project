@@ -8,6 +8,19 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getUserActivity = /* GraphQL */ `query GetUserActivity($userId: ID!) {
+  getUserActivity(userId: $userId) {
+    userId
+    timestamp
+    activityType
+    metadata
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetUserActivityQueryVariables,
+  APITypes.GetUserActivityQuery
+>;
 export const getBlog = /* GraphQL */ `query GetBlog($id: ID!) {
   getBlog(id: $id) {
     id
@@ -44,6 +57,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   getPost(id: $id) {
     id
     title
+    content
     blog {
       id
       name
@@ -71,6 +85,7 @@ export const listPosts = /* GraphQL */ `query ListPosts(
     items {
       id
       title
+      content
       createdAt
       updatedAt
       blogPostsId
@@ -87,6 +102,7 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
     post {
       id
       title
+      content
       createdAt
       updatedAt
       blogPostsId

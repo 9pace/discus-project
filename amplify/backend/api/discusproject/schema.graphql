@@ -11,6 +11,7 @@ type Blog @model {
 type Post @model {
   id: ID!
   title: String!
+  content: String
   blog: Blog @belongsTo
   comments: [Comment] @hasMany
 }
@@ -21,11 +22,18 @@ type Comment @model {
   content: String!
 }
 
-type Mutation {
-  incrementViews(postId: ID!): ViewCount @function(name: "discusproject76f68b07-${env}")
+type Query {
+  getUserActivity(userId: ID!): [ActivityLog] @function(name: "activityLogger-${env}")
 }
 
-type ViewCount {
-  views: Int!
+type Mutation {
+  logActivity(userId: ID!, activityType: String!, metadata: String): ActivityLog @function(name: "activityLogger-${env}")
+}
+
+type ActivityLog {
+  userId: ID!
+  timestamp: String!
+  activityType: String!
+  metadata: String
 }
 

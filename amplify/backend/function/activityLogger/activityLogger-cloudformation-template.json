@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.1\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"Prefer not to answer\"}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.1\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"\"}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -16,17 +16,17 @@
     "s3Key": {
       "Type": "String"
     },
-    "storagedynamo1b239aa0Name": {
+    "storagecountsTableName": {
       "Type": "String",
-      "Default": "storagedynamo1b239aa0Name"
+      "Default": "storagecountsTableName"
     },
-    "storagedynamo1b239aa0Arn": {
+    "storagecountsTableArn": {
       "Type": "String",
-      "Default": "storagedynamo1b239aa0Arn"
+      "Default": "storagecountsTableArn"
     },
-    "storagedynamo1b239aa0StreamArn": {
+    "storagecountsTableStreamArn": {
       "Type": "String",
-      "Default": "storagedynamo1b239aa0StreamArn"
+      "Default": "storagecountsTableStreamArn"
     }
   },
   "Conditions": {
@@ -59,12 +59,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "discusproject76f68b07",
+            "activityLogger",
             {
               "Fn::Join": [
                 "",
                 [
-                  "discusproject76f68b07",
+                  "activityLogger",
                   "-",
                   {
                     "Ref": "env"
@@ -82,14 +82,14 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "STORAGE_DYNAMO1B239AA0_NAME": {
-              "Ref": "storagedynamo1b239aa0Name"
+            "STORAGE_COUNTSTABLE_NAME": {
+              "Ref": "storagecountsTableName"
             },
-            "STORAGE_DYNAMO1B239AA0_ARN": {
-              "Ref": "storagedynamo1b239aa0Arn"
+            "STORAGE_COUNTSTABLE_ARN": {
+              "Ref": "storagecountsTableArn"
             },
-            "STORAGE_DYNAMO1B239AA0_STREAMARN": {
-              "Ref": "storagedynamo1b239aa0StreamArn"
+            "STORAGE_COUNTSTABLE_STREAMARN": {
+              "Ref": "storagecountsTableStreamArn"
             }
           }
         },
@@ -110,12 +110,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "discusprojectLambdaRole450f8875",
+            "discusprojectLambdaRolec9d8b0c4",
             {
               "Fn::Join": [
                 "",
                 [
-                  "discusprojectLambdaRole450f8875",
+                  "discusprojectLambdaRolec9d8b0c4",
                   "-",
                   {
                     "Ref": "env"
@@ -223,14 +223,14 @@
               ],
               "Resource": [
                 {
-                  "Ref": "storagedynamo1b239aa0Arn"
+                  "Ref": "storagecountsTableArn"
                 },
                 {
                   "Fn::Join": [
                     "/",
                     [
                       {
-                        "Ref": "storagedynamo1b239aa0Arn"
+                        "Ref": "storagecountsTableArn"
                       },
                       "index/*"
                     ]

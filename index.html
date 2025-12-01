@@ -564,6 +564,7 @@
         <div class="logo-text">Discus</div>
       </div>
       <div class="user-section">
+        <button class="signout-btn" id="activityBtn" style="margin-right: 10px;">📊 Activity</button>
         <div class="avatar" id="userAvatar">U</div>
         <button class="signout-btn" id="signoutBtn">Sign Out</button>
       </div>
@@ -620,6 +621,18 @@
           </div>
           
           <div class="post-feed" id="postsFeed"></div>
+        </div>
+      </div>
+
+      <!-- Activity Page -->
+      <div id="activityPage" class="hidden">
+        <div class="content-area">
+          <button class="back-btn" id="backToDiscussionsFromActivity">← Back</button>
+          <div class="page-header">
+            <h1 class="page-title">📊 Activity</h1>
+            <p class="page-subtitle">Your recent actions</p>
+          </div>
+          <div id="activityList"></div>
         </div>
       </div>
 
