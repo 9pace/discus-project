@@ -1,4 +1,31 @@
 {
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-discusproject-main-dac05-authRole",
+      "UnauthRoleArn": "arn:aws:iam::360321814051:role/amplify-discusproject-main-dac05-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::360321814051:role/amplify-discusproject-main-dac05-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-discusproject-main-dac05-deployment",
+      "UnauthRoleName": "amplify-discusproject-main-dac05-unauthRole",
+      "StackName": "amplify-discusproject-main-dac05",
+      "StackId": "arn:aws:cloudformation:us-east-1:360321814051:stack/amplify-discusproject-main-dac05/b99b9090-cec3-11f0-8857-122c7bcb6d75",
+      "AmplifyAppId": "d32wbf35pydu67"
+    },
+    "categories": {
+      "auth": {
+        "discusprojectfa22430ffa22430f": {}
+      },
+      "function": {
+        "activityLogger": {
+          "deploymentBucketName": "amplify-discusproject-main-dac05-deployment",
+          "s3Key": "amplify-builds/activityLogger-723074464e4d3655494b-build.zip"
+        }
+      },
+      "storage": {
+        "countsTable": {}
+      }
+    }
+  },
   "dev": {
     "awscloudformation": {
       "AuthRoleName": "amplify-discusproject-dev-31ef9-authRole",

@@ -79,22 +79,6 @@
           "resourceName": "activityLogger"
         }
       ]
-    },
-    "AMPLIFY_function_discusproject76f68b07_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "discusproject76f68b07"
-        }
-      ]
-    },
-    "AMPLIFY_function_discusproject76f68b07_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "discusproject76f68b07"
-        }
-      ]
     }
   },
   "storage": {
